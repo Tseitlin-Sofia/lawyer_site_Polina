@@ -1,0 +1,14 @@
+<header class="site-header">
+  <div class="wrap site-header__inner">
+    <a class="brand" href="{% url 'core:home' %}">
+      <span class="brand__name">{{ site.full_name }}</span>
+      <span class="brand__role">{{ site.role }}</span>
+    </a>
+    <nav class="site-nav">
+      <a href="{% url 'core:home' %}#voprosy">Вопросы</a>
+      <a href="{% url 'core:home' %}#uslugi">Услуги и цены</a>
+      <a href="{% url 'core:home' %}#obo-mne">Обо мне</a>
+      <a href="{% url 'core:home' %}#kontakty">Контакты</a>
+    </nav>
+  </div>
+</header>

@@ -1,0 +1,8 @@
+<footer class="site-footer">
+  <div class="wrap site-footer__inner">
+    <span>{{ site.full_name }}{% if site.city %}, {{ site.city }}{% endif %}</span>
+    <span>
+      <a href="{% url 'core:privacy' %}">Обработка персональных данных</a>
+    </span>
+  </div>
+</footer>

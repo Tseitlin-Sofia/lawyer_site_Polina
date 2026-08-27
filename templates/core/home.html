@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero">
+  <div class="wrap hero__inner">
+    <div>
+      <p class="eyebrow">{{ site.role }}{% if site.city %} · {{ site.city }}{% endif %}</p>
+      <h1>{{ site.hero_title }}</h1>
+      <p class="hero__lead">{{ site.hero_subtitle }}</p>
+      <p class="hero__meta">
+        <span class="mark">Не знаете, как сформулировать вопрос — это нормально.</span>
+        Ниже готовые формулировки: выберите ближайшую.
+      </p>
+    </div>
+
+    <aside class="hero__card">
+      {% if site.photo %}<img class="hero__photo" src="{{ site.photo.url }}" alt="{{ site.full_name }}">{% endif %}
+      <dl>
+        <dt>Кто</dt><dd>{{ site.full_name }}</dd>
+        {% if site.working_hours %}<dt>Часы</dt><dd>{{ site.working_hours }}</dd>{% endif %}
+        {% if site.response_promise %}<dt>Ответ</dt><dd>{{ site.response_promise }}</dd>{% endif %}
+      </dl>
+    </aside>
+  </div>
+</section>
+
+<section class="section" id="voprosy">
+  <div class="wrap">
+    <div class="section__head">
+      <p class="eyebrow">Шаг первый</p>
+      <h2>С чем вы пришли</h2>
+      <p>Нажмите на строку — откроется короткая форма, вопрос уже будет вписан.
+         Останется указать имя и способ связи.</p>
+    </div>
+    {% include "includes/_questions.html" %}
+  </div>
+</section>
+
+<section class="section" id="uslugi">
+  <div class="wrap">
+    <div class="section__head">
+      <p class="eyebrow">Услуги</p>
+      <h2>Что я делаю и сколько это стоит</h2>
+      <p>Цены ориентировочные: точная сумма зависит от объёма документов и того,
+         дошло ли дело до суда. На первой консультации это обсуждается сразу.</p>
+    </div>
+
+    {% for category in categories %}
+      {% if category.active_services %}
+      <div class="category">
+        <div class="category__head">
+          <h3>{{ category.title }}</h3>
+          {% if category.is_team_practice %}<span class="tag">вместе с коллегами</span>{% endif %}
+        </div>
+        {% if category.description %}<p class="category__note">{{ category.description }}</p>{% endif %}
+
+        <div class="price-list">
+          {% for service in category.active_services %}
+          <div class="price-row">
+            <div class="price-row__title">{{ service.title }}</div>
+            <div class="price-row__price">{{ service.price_display }}</div>
+            {% if service.short_description %}<div class="price-row__desc">{{ service.short_description }}</div>{% endif %}
+            {% if service.price_note %}<div class="price-row__note">{{ service.price_note }}</div>{% endif %}
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    {% empty %}
+      <p style="color:var(--ink-faint)">Услуги пока не добавлены — они появятся здесь автоматически.</p>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section" id="obo-mne">
+  <div class="wrap">
+    <div class="section__head">
+      <p class="eyebrow">Обо мне</p>
+      <h2>{{ site.full_name }}</h2>
+    </div>
+
+    <div class="about-grid">
+      <div>
+        {% for paragraph in site.about_paragraphs %}<p>{{ paragraph }}</p>{% endfor %}
+
+        {% if experience %}
+        <div class="record-list" style="margin-top:32px">
+          {% for item in experience %}
+          <article class="record">
+            <div class="record__num">{{ forloop.counter|stringformat:"02d" }}</div>
+            <div class="record__period">{{ item.period }}</div>
+            <div class="record__body">
+              <h4>{{ item.title }}</h4>
+              {% if item.organization %}<p class="record__org">{{ item.organization }}</p>{% endif %}
+              {% if item.description %}<p>{{ item.description }}</p>{% endif %}
+            </div>
+          </article>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+
+      {% if credentials %}
+      <div>
+        <p class="eyebrow">Образование и допуски</p>
+        <ul class="chip-list">
+          {% for item in credentials %}
+          <li>
+            {{ item.title }}
+            <span>{{ item.issuer }}{% if item.year %}, {{ item.year }}{% endif %}</span>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<section class="section" id="kontakty">
+  <div class="wrap">
+    <div class="section__head">
+      <p class="eyebrow">Связь</p>
+      <h2>Написать напрямую</h2>
+      <p>Если удобнее без формы — вот прямые контакты.</p>
+    </div>
+
+    <div class="contacts">
+      {% if site.phone %}
+      <a class="contact-card" href="tel:{{ site.phone }}">
+        <span class="contact-card__label">Телефон</span>
+        <span class="contact-card__value">{{ site.phone }}</span>
+      </a>
+      {% endif %}
+      {% if site.whatsapp %}
+      <a class="contact-card" href="{{ site.whatsapp_link }}" target="_blank" rel="noopener">
+        <span class="contact-card__label">WhatsApp</span>
+        <span class="contact-card__value">Написать</span>
+      </a>
+      {% endif %}
+      {% if site.telegram %}
+      <a class="contact-card" href="{{ site.telegram_link }}" target="_blank" rel="noopener">
+        <span class="contact-card__label">Telegram</span>
+        <span class="contact-card__value">@{{ site.telegram }}</span>
+      </a>
+      {% endif %}
+      {% if site.email %}
+      <a class="contact-card" href="mailto:{{ site.email }}">
+        <span class="contact-card__label">Почта</span>
+        <span class="contact-card__value">{{ site.email }}</span>
+      </a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}

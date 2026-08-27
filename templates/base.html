@@ -1,0 +1,38 @@
+{% load static %}<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ site.full_name }} — {{ site.role }}{% endblock %}</title>
+  <meta name="description" content="{% block description %}{{ site.meta_description }}{% endblock %}">
+  <meta property="og:title" content="{{ site.full_name }} — {{ site.role }}">
+  <meta property="og:description" content="{{ site.meta_description }}">
+  <meta property="og:type" content="website">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@500;600&family=Golos+Text:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+  {% block head_extra %}{% endblock %}
+</head>
+<body>
+  {% include "includes/_header.html" %}
+
+  {% if messages %}
+    <div class="wrap">
+      <ul class="messages">
+        {% for message in messages %}<li class="{{ message.tags }}">{{ message }}</li>{% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  {% include "includes/_footer.html" %}
+  {% include "includes/_lead_modal.html" %}
+
+  <script src="{% static 'js/app.js' %}" defer></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Обработка персональных данных — {{ site.full_name }}{% endblock %}
+
+{% block content %}
+<section class="section" style="border-top:0">
+  <div class="wrap" style="max-width:720px">
+    <p class="eyebrow">Документ</p>
+    <h1 style="font-size:32px;margin-bottom:24px">Обработка персональных данных</h1>
+    {% if site.privacy_policy %}
+      {{ site.privacy_policy|linebreaks }}
+    {% else %}
+      <p>Текст политики пока не заполнен. Добавьте его в панели управления:
+         «Настройки сайта» → «Служебное» → «Текст политики обработки данных».</p>
+    {% endif %}
+    <p style="margin-top:32px"><a href="{% url 'core:home' %}">← На главную</a></p>
+  </div>
+</section>
+{% endblock %}

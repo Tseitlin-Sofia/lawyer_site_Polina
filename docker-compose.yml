@@ -1,0 +1,21 @@
+# Разработка: живая перезагрузка, код примонтирован с хоста.
+#   docker compose up
+services:
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings.dev
+      SKIP_COLLECTSTATIC: "1"
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - dev_data:/app/data
+      - dev_media:/app/media
+    ports:
+      - "8000:8000"
+
+volumes:
+  dev_data:
+  dev_media:

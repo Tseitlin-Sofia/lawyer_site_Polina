@@ -1,0 +1,35 @@
+{# Готовые вопросы. Каждая строка открывает форму с уже подставленным вопросом. #}
+<div class="questions">
+  <div class="questions__head">
+    <span>Отметьте свой случай</span>
+    <span>Заполнять анкету не нужно</span>
+  </div>
+
+  {% for question in questions %}
+    <button type="button" class="question-row"
+            data-question="{{ question.pk }}"
+            data-question-text="{{ question.text }}">
+      <span class="question-row__box" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+             stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+      </span>
+      <span class="question-row__text">
+        {{ question.text }}
+        {% if question.hint %}<span class="question-row__hint">{{ question.hint }}</span>{% endif %}
+      </span>
+      <span class="question-row__arrow" aria-hidden="true">→</span>
+    </button>
+  {% empty %}
+    <div style="padding:24px 20px;color:var(--ink-faint)">
+      Список вопросов пока пуст. Добавьте их в разделе «Готовые вопросы» панели управления.
+    </div>
+  {% endfor %}
+
+  <div class="questions__footer">
+    <p>Вашей ситуации нет в списке?</p>
+    <button type="button" class="btn btn--ghost"
+            data-question="" data-question-text="Свой вопрос" data-custom="1">
+      Описать своими словами
+    </button>
+  </div>
+</div>

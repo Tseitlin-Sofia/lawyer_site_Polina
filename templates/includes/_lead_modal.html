@@ -1,0 +1,69 @@
+<div class="modal" id="lead-modal" role="dialog" aria-modal="true" aria-labelledby="lead-modal-title">
+  <div class="modal__dialog">
+    <div class="modal__head">
+      <div>
+        <p class="modal__label">Ваш вопрос</p>
+        <p class="modal__question" id="lead-modal-title" data-question-text></p>
+      </div>
+      <button type="button" class="modal__close" data-close aria-label="Закрыть">&times;</button>
+    </div>
+
+    <div class="modal__body">
+      <form action="{% url 'leads:create' %}" method="post" novalidate>
+        {% csrf_token %}
+        <input type="hidden" name="question_template" value="">
+        <div class="hp" aria-hidden="true">
+          <label for="id_website">Не заполняйте это поле</label>
+          <input type="text" name="website" id="id_website" tabindex="-1" autocomplete="off">
+        </div>
+
+        <div class="field" data-custom-field hidden>
+          <label for="id_custom_question">Что случилось</label>
+          <textarea name="custom_question" id="id_custom_question" rows="3"
+                    placeholder="Двух предложений достаточно"></textarea>
+        </div>
+
+        <div class="field">
+          <label for="id_name">Как к вам обращаться</label>
+          <input type="text" name="name" id="id_name" required autocomplete="name">
+        </div>
+
+        <div class="field">
+          <label for="id_contact_method">Как удобнее связаться</label>
+          <select name="contact_method" id="id_contact_method">
+            <option value="phone">Позвонить</option>
+            <option value="whatsapp">WhatsApp</option>
+            <option value="telegram">Telegram</option>
+            <option value="email">Написать на почту</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="id_contact">Телефон, ник или почта</label>
+          <input type="text" name="contact" id="id_contact" required>
+        </div>
+
+        <div class="field field--check">
+          <input type="checkbox" name="consent" id="id_consent" required>
+          <label for="id_consent">
+            Согласен(на) на <a href="{% url 'core:privacy' %}" target="_blank">обработку данных</a>
+            для ответа на обращение
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn--marker btn--wide">Отправить вопрос</button>
+        <p class="form-note">
+          {% if site.response_promise %}{{ site.response_promise }}.{% endif %}
+          Формулировать ничего не нужно — детали уточним при разговоре.
+        </p>
+      </form>
+    </div>
+
+    <div class="modal__done">
+      <span class="stamp">Принято</span>
+      <h3>Вопрос отправлен</h3>
+      <p>{{ site.full_name }} свяжется с вами{% if site.response_promise %} — {{ site.response_promise|lower }}{% endif %}.</p>
+      <p style="margin-top:20px"><button type="button" class="btn btn--ghost" data-close>Закрыть</button></p>
+    </div>
+  </div>
+</div>

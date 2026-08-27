@@ -1,0 +1,63 @@
+# Продакшн: gunicorn + Caddy с автоматическим HTTPS.
+#   docker compose -f docker-compose.prod.yml up -d --build
+#
+# На PaaS (Fly.io, Koyeb, Render) этот файл не нужен — там берут один Dockerfile.
+services:
+  web:
+    build: .
+    restart: unless-stopped
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings.prod
+    env_file:
+      - .env
+    volumes:
+      - app_data:/app/data
+      - app_media:/app/media
+      - static_files:/app/staticfiles
+    expose:
+      - "8000"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      - web
+    environment:
+      DOMAIN: ${DOMAIN:-localhost}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - static_files:/srv/static:ro
+      - app_media:/srv/media:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+  # Postgres нужен только при росте нагрузки. Чтобы включить:
+  # раскомментируйте блок и укажите в .env
+  # DATABASE_URL=postgres://lawyer:пароль@db:5432/lawyer
+  #
+  # db:
+  #   image: postgres:16-alpine
+  #   restart: unless-stopped
+  #   environment:
+  #     POSTGRES_DB: lawyer
+  #     POSTGRES_USER: lawyer
+  #     POSTGRES_PASSWORD: смените_пароль
+  #   volumes:
+  #     - pg_data:/var/lib/postgresql/data
+
+volumes:
+  app_data:
+  app_media:
+  static_files:
+  caddy_data:
+  caddy_config:
+  # pg_data:

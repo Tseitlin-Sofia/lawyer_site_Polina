@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}{{ service.title }} — {{ site.full_name }}{% endblock %}
+{% block description %}{{ service.short_description }}{% endblock %}
+
+{% block content %}
+<section class="section" style="border-top:0">
+  <div class="wrap" style="max-width:760px">
+    <p class="eyebrow">{{ service.category.title }}</p>
+    <h1 style="font-size:34px;margin-bottom:12px">{{ service.title }}</h1>
+    <p style="font-family:var(--font-mono);color:var(--ink-soft)">
+      {{ service.price_display }}{% if service.price_note %} · {{ service.price_note }}{% endif %}
+    </p>
+
+    {% if service.description %}<div style="margin-top:24px">{{ service.description|linebreaks }}</div>{% endif %}
+
+    <div style="margin-top:32px">
+      {% include "includes/_questions.html" %}
+    </div>
+
+    <p style="margin-top:32px"><a href="{% url 'core:home' %}#uslugi">← Ко всем услугам</a></p>
+  </div>
+</section>
+{% endblock %}
