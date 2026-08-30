@@ -40,19 +40,15 @@ services:
       - caddy_data:/data
       - caddy_config:/config
 
-  # Postgres нужен только при росте нагрузки. Чтобы включить:
-  # раскомментируйте блок и укажите в .env
-  # DATABASE_URL=postgres://lawyer:пароль@db:5432/lawyer
-  #
-  # db:
-  #   image: postgres:16-alpine
-  #   restart: unless-stopped
-  #   environment:
-  #     POSTGRES_DB: lawyer
-  #     POSTGRES_USER: lawyer
-  #     POSTGRES_PASSWORD: смените_пароль
-  #   volumes:
-  #     - pg_data:/var/lib/postgresql/data
+    db:
+     image: postgres:16-alpine
+     restart: unless-stopped
+     environment:
+       POSTGRES_DB: lawyer
+       POSTGRES_USER: lawyer
+       POSTGRES_PASSWORD: смените_пароль
+     volumes:
+       - pg_data:/var/lib/postgresql/data
 
 volumes:
   app_data:

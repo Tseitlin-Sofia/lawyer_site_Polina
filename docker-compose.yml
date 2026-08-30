@@ -1,21 +1,49 @@
-# Разработка: живая перезагрузка, код примонтирован с хоста.
-#   docker compose up
+# РАЗРАБОТКА на вашей машине.
+# Для сервера используется другой файл: docker-compose.prod.yml
+
 services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-lawyer}
+      POSTGRES_USER: ${POSTGRES_USER:-lawyer}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-lawyer_dev}
+    volumes:
+      - dev_pg:/var/lib/postgresql/data
+    ports:
+      # Порт наружу — чтобы manage.py из локального venv видел базу
+      # по адресу localhost:5434. На сервере так делать нельзя.
+      - "5434:5432"
+    healthcheck:
+      # Django падает, если полезть в базу до того, как она готова.
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-lawyer}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
   web:
     build: .
     command: python manage.py runserver 0.0.0.0:8000
     environment:
       DJANGO_SETTINGS_MODULE: config.settings.dev
       SKIP_COLLECTSTATIC: "1"
+      # Внутри сети Docker база доступна по имени сервиса «db», а не по
+      # localhost. Эта строка перекрывает DATABASE_URL из .env, где указан
+      # адрес для запуска с хоста.
+      DATABASE_URL: postgres://${POSTGRES_USER:-lawyer}:${POSTGRES_PASSWORD:-lawyer_dev}@db:5432/${POSTGRES_DB:-lawyer}
     env_file:
       - .env
+    depends_on:
+      db:
+        condition: service_healthy
     volumes:
       - .:/app
-      - dev_data:/app/data
       - dev_media:/app/media
     ports:
       - "8000:8000"
 
+# Именованные тома. Живут отдельно от контейнеров и переживают пересборку.
 volumes:
-  dev_data:
+  dev_pg:
   dev_media:

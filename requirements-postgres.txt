@@ -1,4 +1,0 @@
-# Нужно только при переходе на Postgres.
-# Ставится отдельно: pip install -r requirements-postgres.txt
--r requirements.txt
-psycopg[binary]>=3.2.10,<4.0
