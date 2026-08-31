@@ -50,6 +50,18 @@ class SiteSettings(SingletonModel, TimeStampedModel):
         default="Отвечаю в течение рабочего дня",
     )
 
+    currency = models.CharField(
+        "валюта",
+        max_length=10,
+        default="₽",
+        help_text="Символ или код: ₽, ₪, $, €, USD. Применяется ко всем ценам.",
+    )
+    currency_before_price = models.BooleanField(
+        "символ перед суммой",
+        default=False,
+        help_text="Включите для $ и €: получится «$1500» вместо «1500 $».",
+    )
+
     meta_description = models.CharField(
         "описание для поисковиков", max_length=300, blank=True
     )
@@ -105,6 +117,21 @@ class Credential(PublishableModel, TimeStampedModel):
     issuer = models.CharField("кем выдано", max_length=200, blank=True)
     year = models.CharField("год", max_length=20, blank=True)
 
+    scan = models.ImageField(
+        "скан документа",
+        upload_to="credentials/",
+        blank=True,
+        help_text=(
+            "Изображение (jpg или png). Перед загрузкой закрасьте номер "
+            "документа и другие личные данные — файл будет доступен всем."
+        ),
+    )
+    show_scan = models.BooleanField(
+        "показывать скан на сайте",
+        default=False,
+        help_text="Снимите галочку, чтобы файл остался в базе, но исчез со страницы.",
+    )
+
     class Meta:
         verbose_name = "образование и допуски"
         verbose_name_plural = "Образование и допуски"
@@ -112,3 +139,8 @@ class Credential(PublishableModel, TimeStampedModel):
 
     def __str__(self):
         return self.title
+
+    @property
+    def has_public_scan(self):
+        """Скан загружен И разрешён к показу."""
+        return bool(self.scan) and self.show_scan

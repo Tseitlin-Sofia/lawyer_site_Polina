@@ -5,5 +5,5 @@ from . import views
 app_name = "leads"
 
 urlpatterns = [
-    path("zayavka/", views.LeadCreateView.as_view(), name="create"),
+    path("requests/", views.LeadCreateView.as_view(), name="create"),
 ]

@@ -262,24 +262,37 @@ p { margin: 0 0 1em; }
 }
 
 .price-list { border-top: 1px solid var(--rule); }
+
+/* Позиция каждой ячейки задана жёстко через grid-area.
+   Иначе у услуги без описания примечание уезжает в первую строку,
+   и цена визуально оказывается посередине. */
 .price-row {
   display: grid;
   grid-template-columns: 1fr auto;
-  gap: 8px 24px;
+  grid-template-rows: auto auto;
+  gap: 4px 24px;
   align-items: baseline;
   padding: 16px 0;
   border-bottom: 1px solid var(--rule);
 }
-.price-row__title { font-weight: 500; }
-.price-row__desc { grid-column: 1 / 2; font-size: 15px; color: var(--ink-faint); }
+.price-row__title { grid-area: 1 / 1 / 2 / 2; font-weight: 500; }
 .price-row__price {
-  grid-row: 1 / 2;
-  grid-column: 2 / 3;
+  grid-area: 1 / 2 / 2 / 3;
   font-family: var(--font-mono);
   font-size: 15px;
   white-space: nowrap;
+  /* Ширину колонки задаёт самый широкий элемент — обычно длинное
+     примечание. Без выравнивания короткая цена прижимается к левому
+     краю ячейки и выглядит «съехавшей». */
+  text-align: right;
 }
-.price-row__note { grid-column: 2 / 3; font-size: 13px; color: var(--ink-faint); text-align: right; }
+.price-row__desc { grid-area: 2 / 1 / 3 / 2; font-size: 15px; color: var(--ink-faint); }
+.price-row__note {
+  grid-area: 2 / 2 / 3 / 3;
+  font-size: 13px;
+  color: var(--ink-faint);
+  text-align: right;
+}
 
 /* --- Опыт: записи как в трудовой книжке -------------------------------- */
 .record-list { display: grid; gap: 0; border-top: 1px solid var(--rule); }
@@ -308,6 +321,49 @@ p { margin: 0 0 1em; }
 }
 .chip-list span { display: block; color: var(--ink-faint); font-size: 13px; }
 
+/* Запись с документом: миниатюра слева, текст справа.
+   Размер миниатюры задан в пикселях, а не в процентах — иначе
+   картинка растягивает колонку и ломает сетку about-grid. */
+.chip--with-scan {
+  display: grid;
+  grid-template-columns: 54px 1fr;
+  gap: 12px;
+  align-items: start;
+}
+.chip__thumb {
+  display: block;
+  width: 54px;
+  height: 72px;
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  overflow: hidden;
+  background: var(--paper);
+  transition: border-color .15s ease, transform .15s ease;
+}
+.chip__thumb:hover {
+  border-color: var(--ink);
+  transform: scale(1.04);
+}
+.chip__thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+.chip__text { min-width: 0; }
+.chip__link {
+  display: inline-block;
+  margin-top: 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  text-decoration-color: var(--marker-deep);
+}
+.chip__link:hover { color: var(--ink); }
+
 /* --- Контакты ---------------------------------------------------------- */
 .contacts { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
 .contact-card {
@@ -321,6 +377,23 @@ p { margin: 0 0 1em; }
 .contact-card__label { font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em;
   text-transform: uppercase; color: var(--ink-faint); display: block; margin-bottom: 6px; }
 .contact-card__value { font-size: 17px; font-weight: 500; }
+
+/* --- Юридический документ (политика обработки данных) ------------------ */
+.legal .wrap { max-width: 680px; }
+.legal h1 { font-size: clamp(26px, 3.6vw, 34px); margin-bottom: 28px; }
+.legal__body { font-size: 16px; line-height: 1.75; color: var(--ink-soft); }
+.legal__body p { margin: 0 0 1.15em; text-wrap: pretty; }
+.legal__meta {
+  margin-top: 36px;
+  padding-top: 16px;
+  border-top: 1px solid var(--rule);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.legal__back { margin-top: 24px; }
 
 /* --- Подвал ------------------------------------------------------------ */
 .site-footer {

@@ -1,0 +1,27 @@
+ФАЙЛ: apps/services/models.py
+
+ШАГ 1. Удалите из класса Service поле currency:
+
+    currency = models.CharField("валюта", max_length=10, default="₪")   # ← удалить
+
+ШАГ 2. Замените свойство price_display на это:
+
+    @property
+    def price_display(self):
+        if self.is_free:
+            return "Бесплатно"
+        if self.price is None:
+            return "По договорённости"
+
+        # Валюта берётся из настроек сайта — одна на все услуги.
+        # Импорт внутри метода, а не наверху файла: иначе получится
+        # круговая зависимость между приложениями services и core.
+        from apps.core.models import SiteSettings
+
+        site = SiteSettings.load()
+        amount = f"{self.price:,.0f}".replace(",", " ")
+        prefix = f"{self.price_prefix} " if self.price_prefix else ""
+
+        if site.currency_before_price:
+            return f"{prefix}{site.currency}{amount}".strip()
+        return f"{prefix}{amount} {site.currency}".strip()

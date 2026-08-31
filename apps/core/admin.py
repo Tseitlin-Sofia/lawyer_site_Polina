@@ -1,4 +1,10 @@
+# ================================================================
+# ФАЙЛ: apps/core/admin.py
+# ДЕЙСТВИЕ: заменить файл целиком
+# Здесь уже учтён блок «Цены», который вы добавляли для валюты.
+# ================================================================
 from django.contrib import admin
+from django.utils.html import format_html
 
 from apps.common.admin import SingletonAdmin
 
@@ -15,6 +21,7 @@ class SiteSettingsAdmin(SingletonAdmin):
             "Контакты",
             {"fields": ("phone", "email", "telegram", "whatsapp", "city", "working_hours")},
         ),
+        ("Цены", {"fields": ("currency", "currency_before_price")}),
         (
             "Служебное",
             {
@@ -35,7 +42,26 @@ class ExperienceItemAdmin(admin.ModelAdmin):
 
 @admin.register(Credential)
 class CredentialAdmin(admin.ModelAdmin):
-    list_display = ("title", "issuer", "year", "is_active", "order")
-    list_editable = ("is_active", "order")
-    list_filter = ("is_active",)
+    list_display = (
+        "title",
+        "issuer",
+        "year",
+        "scan_preview",
+        "show_scan",
+        "is_active",
+        "order",
+    )
+    list_editable = ("show_scan", "is_active", "order")
+    list_filter = ("is_active", "show_scan")
     search_fields = ("title", "issuer")
+    fields = ("title", "issuer", "year", "scan", "show_scan", "is_active", "order")
+
+    @admin.display(description="скан")
+    def scan_preview(self, obj):
+        """Маленькое превью в списке — чтобы не открывать каждую запись."""
+        if not obj.scan:
+            return "—"
+        return format_html(
+            '<img src="{}" style="height:40px;border:1px solid #ccc;border-radius:2px">',
+            obj.scan.url,
+        )

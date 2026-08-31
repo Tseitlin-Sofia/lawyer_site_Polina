@@ -24,7 +24,7 @@
   </div>
 </section>
 
-<section class="section" id="voprosy">
+<section class="section" id="questions">
   <div class="wrap">
     <div class="section__head">
       <p class="eyebrow">Шаг первый</p>
@@ -36,7 +36,7 @@
   </div>
 </section>
 
-<section class="section" id="uslugi">
+<section class="section" id="services">
   <div class="wrap">
     <div class="section__head">
       <p class="eyebrow">Услуги</p>
@@ -72,7 +72,7 @@
   </div>
 </section>
 
-<section class="section" id="obo-mne">
+<section class="section" id="about_me">
   <div class="wrap">
     <div class="section__head">
       <p class="eyebrow">Обо мне</p>
@@ -105,9 +105,22 @@
         <p class="eyebrow">Образование и допуски</p>
         <ul class="chip-list">
           {% for item in credentials %}
-          <li>
-            {{ item.title }}
-            <span>{{ item.issuer }}{% if item.year %}, {{ item.year }}{% endif %}</span>
+          <li class="chip{% if item.has_public_scan %} chip--with-scan{% endif %}">
+            {% if item.has_public_scan %}
+              <a class="chip__thumb" href="{{ item.scan.url }}" target="_blank" rel="noopener"
+                 title="Открыть документ в полном размере">
+                <img src="{{ item.scan.url }}" alt="{{ item.title }}" loading="lazy">
+              </a>
+            {% endif %}
+            <div class="chip__text">
+              {{ item.title }}
+              <span>{{ item.issuer }}{% if item.year %}, {{ item.year }}{% endif %}</span>
+              {% if item.has_public_scan %}
+                <a class="chip__link" href="{{ item.scan.url }}" target="_blank" rel="noopener">
+                  Посмотреть документ
+                </a>
+              {% endif %}
+            </div>
           </li>
           {% endfor %}
         </ul>
@@ -117,7 +130,7 @@
   </div>
 </section>
 
-<section class="section" id="kontakty">
+<section class="section" id="contacts">
   <div class="wrap">
     <div class="section__head">
       <p class="eyebrow">Связь</p>

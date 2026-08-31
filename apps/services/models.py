@@ -63,7 +63,6 @@ class Service(PublishableModel, TimeStampedModel):
         blank=True,
         default="",
     )
-    currency = models.CharField("валюта", max_length=10, default="₪")
     price_note = models.CharField(
         "примечание к цене",
         max_length=120,
@@ -94,6 +93,16 @@ class Service(PublishableModel, TimeStampedModel):
             return "Бесплатно"
         if self.price is None:
             return "По договорённости"
+
+        # Валюта берётся из настроек сайта — одна на все услуги.
+        # Импорт внутри метода, а не наверху файла: иначе получится
+        # круговая зависимость между приложениями services и core.
+        from apps.core.models import SiteSettings
+
+        site = SiteSettings.load()
         amount = f"{self.price:,.0f}".replace(",", " ")
         prefix = f"{self.price_prefix} " if self.price_prefix else ""
-        return f"{prefix}{amount} {self.currency}".strip()
+
+        if site.currency_before_price:
+            return f"{prefix}{site.currency}{amount}".strip()
+        return f"{prefix}{amount} {site.currency}".strip()

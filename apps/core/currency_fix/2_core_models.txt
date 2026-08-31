@@ -1,0 +1,16 @@
+ФАЙЛ: apps/core/models.py
+
+В классе SiteSettings найдите блок с meta_description и privacy_policy.
+ПЕРЕД ним добавьте два поля:
+
+    currency = models.CharField(
+        "валюта",
+        max_length=10,
+        default="₽",
+        help_text="Символ или код: ₽, ₪, $, €, USD. Применяется ко всем ценам.",
+    )
+    currency_before_price = models.BooleanField(
+        "символ перед суммой",
+        default=False,
+        help_text="Включите для $ и €: получится «$1500» вместо «1500 $».",
+    )

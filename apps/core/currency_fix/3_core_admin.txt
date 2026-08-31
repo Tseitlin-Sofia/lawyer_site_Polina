@@ -1,0 +1,9 @@
+ФАЙЛ: apps/core/admin.py
+
+В классе SiteSettingsAdmin в fieldsets найдите блок «Служебное»
+и ПЕРЕД ним вставьте новый блок:
+
+        (
+            "Цены",
+            {"fields": ("currency", "currency_before_price")},
+        ),
