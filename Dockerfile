@@ -18,6 +18,7 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 COPY . .
 
 RUN mkdir -p /app/data /app/media /app/staticfiles \
+ && chmod +x /app/entrypoint.sh \
  && adduser --disabled-password --gecos "" appuser \
  && chown -R appuser:appuser /app
 
