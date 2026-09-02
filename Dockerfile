@@ -12,10 +12,8 @@ RUN apt-get update \
  && apt-get install -y --no-install-recommends curl \
  && rm -rf /var/lib/apt/lists/*
 
-# Postgres-драйвер ставится здесь заранее: контейнер один и тот же
-# для SQLite и для Postgres, переключение — через DATABASE_URL.
 COPY requirements.txt requirements-postgres.txt ./
-RUN pip install --upgrade pip && pip install -r requirements-postgres.txt
+RUN pip install --upgrade pip && pip install -r requirements.txt
 
 COPY . .
 

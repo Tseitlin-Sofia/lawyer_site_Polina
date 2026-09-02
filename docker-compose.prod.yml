@@ -1,8 +1,29 @@
-# Продакшн: gunicorn + Caddy с автоматическим HTTPS.
+# ПРОДАКШН: gunicorn + PostgreSQL + Caddy с автоматическим HTTPS.
 #   docker compose -f docker-compose.prod.yml up -d --build
 #
-# На PaaS (Fly.io, Koyeb, Render) этот файл не нужен — там берут один Dockerfile.
+# На PaaS (Fly.io, Koyeb, Render) этот файл не нужен: там берут Dockerfile
+# и подключают управляемую базу, передав её адрес в DATABASE_URL.
 services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      # Значения берутся из .env. По умолчанию их нет намеренно:
+      # если переменная не задана, Docker выругается вместо того,
+      # чтобы молча поднять базу с предсказуемым паролем.
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    # Секции ports нет намеренно: база доступна только контейнерам этой
+    # сети. Открытый наружу 5432 сканеры находят за часы.
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   web:
     build: .
     restart: unless-stopped
@@ -10,11 +31,14 @@ services:
       DJANGO_SETTINGS_MODULE: config.settings.prod
     env_file:
       - .env
+    depends_on:
+      db:
+        condition: service_healthy
     volumes:
-      - app_data:/app/data
       - app_media:/app/media
       - static_files:/app/staticfiles
     expose:
+      # Порт виден только внутри сети Docker. Наружу смотрит Caddy.
       - "8000"
     healthcheck:
       test: ["CMD", "curl", "-fsS", "http://localhost:8000/"]
@@ -29,7 +53,7 @@ services:
     depends_on:
       - web
     environment:
-      DOMAIN: ${DOMAIN:-localhost}
+      DOMAIN: ${DOMAIN}
     ports:
       - "80:80"
       - "443:443"
@@ -37,23 +61,15 @@ services:
       - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
       - static_files:/srv/static:ro
       - app_media:/srv/media:ro
+      # Здесь Caddy хранит полученные сертификаты. Без этого тома он будет
+      # запрашивать новый при каждом перезапуске и упрётся в лимиты
+      # Let's Encrypt.
       - caddy_data:/data
       - caddy_config:/config
 
-    db:
-     image: postgres:16-alpine
-     restart: unless-stopped
-     environment:
-       POSTGRES_DB: lawyer
-       POSTGRES_USER: lawyer
-       POSTGRES_PASSWORD: смените_пароль
-     volumes:
-       - pg_data:/var/lib/postgresql/data
-
 volumes:
-  app_data:
+  pg_data:
   app_media:
   static_files:
   caddy_data:
   caddy_config:
-  # pg_data:
